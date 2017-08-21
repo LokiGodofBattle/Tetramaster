@@ -42,6 +42,16 @@ public class Main extends ApplicationAdapter {
 		background = new Image(new Texture(Gdx.files.internal("BG.png")));
 		background.setScale(VIEWPORT_HEIGHT/background.getHeight());
 		background.setPosition(VIEWPORT_WIDTH/2-(background.getWidth()*background.getScaleX())/2, 0);
+
+		GfxHandler.initGfx();
+
+		Slot.slotCount = 4;
+		Slot.slotHeight = VIEWPORT_HEIGHT/Slot.slotCount;
+		Gdx.app.log("debug2", "" + Slot.slotHeight);
+		Slot.slotWidth = (background.getWidth()*background.getScaleX())/Slot.slotCount;
+
+		Slot.initSlots();
+
 	}
 
 	@Override
@@ -51,6 +61,7 @@ public class Main extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		background.draw(batch, 1);
+		Slot.drawAllSlots(batch);
 		batch.end();
 	}
 	

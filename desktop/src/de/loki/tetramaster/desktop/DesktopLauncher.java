@@ -9,8 +9,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		config.title = "Geometric Space";
-		config.width = 1080;
-		config.height = 1920;
+		config.width = 1920;
+		config.height = 1080;
 		config.fullscreen = false;
 		config.resizable = false;
 

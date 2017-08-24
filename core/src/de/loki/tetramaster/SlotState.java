@@ -17,4 +17,19 @@ public enum SlotState {
         this.state = state;
     }
 
+    public static SlotState getNextSlotState(SlotState state){
+        switch (state){
+            case EMPTY:
+                return BLOCKED;
+            case BLOCKED:
+                return FRIENDLY;
+            case FRIENDLY:
+                return OPPOSING;
+            case OPPOSING:
+                return EMPTY;
+            default:
+                return EMPTY;
+        }
+    }
+
 }

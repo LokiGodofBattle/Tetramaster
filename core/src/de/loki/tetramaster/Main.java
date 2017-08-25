@@ -1,6 +1,6 @@
 package de.loki.tetramaster;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,16 +12,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Main extends ApplicationAdapter {
+public class Main extends Game {
 
-	private static OrthographicCamera camera;
-	private Viewport viewport;
+	public static OrthographicCamera camera;
+	public Viewport viewport;
 	public final static int VIEWPORT_WIDTH = 2560;
 	public static float VIEWPORT_HEIGHT;
 	public static float scale;
 	private static float aspect_ratio;
-	private SpriteBatch batch;
-	private Image background;
+	public SpriteBatch batch;
+	private GameScreen gameScreen;
+	private CardSelectScreen cardSelectScreen;
 	
 	@Override
 	public void create () {
@@ -47,35 +48,20 @@ public class Main extends ApplicationAdapter {
 		GfxHandler.initGfx();
 
 		Slot.slotCount = 4;
-		Slot.slotHeight = VIEWPORT_HEIGHT/Slot.slotCount;
+		Slot.slotHeight = Main.VIEWPORT_HEIGHT/Slot.slotCount;
 		Slot.slotScale = Slot.slotHeight/GfxHandler.getBackgroundBySlotState(SlotState.BLOCKED).getHeight();
 		Slot.slotWidth = GfxHandler.getBackgroundBySlotState(SlotState.BLOCKED).getWidth()*Slot.slotScale;
 
-		background = new Image(new Texture(Gdx.files.internal("BG.png")));
-		background.setScaleY(VIEWPORT_HEIGHT/background.getHeight());
-		background.setScaleX(Slot.slotWidth*4/background.getWidth());
-		background.setPosition(VIEWPORT_WIDTH/2-(background.getWidth()*background.getScaleX())/2, 0);
-
-		Slot.initSlots();
-
+		gameScreen = new GameScreen(this);
+		cardSelectScreen = new CardSelectScreen(this);
+		this.setScreen(cardSelectScreen);
 	}
 
 	@Override
 	public void render () {
 
-		Vector3 mouse = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+		super.render();
 
-		camera.unproject(mouse);
-
-		Slot.renderAllSlots(new Vector2(mouse.x, mouse.y));
-
-		Gdx.gl.glClearColor(0, 0, 0, 0);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
-		background.draw(batch, 1);
-		Slot.drawAllSlots(batch);
-		batch.end();
 	}
 	
 	@Override

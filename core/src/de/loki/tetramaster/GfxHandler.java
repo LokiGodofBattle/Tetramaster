@@ -32,4 +32,12 @@ public class GfxHandler {
         }
     }
 
+    public static Texture getCardTextureByID(int ID){
+        if(ID<=9) return new Texture(Gdx.files.internal("00" + ID + ".gif"));
+        else if(ID>9 && ID <100) return new Texture(Gdx.files.internal("0" + ID + ".gif"));
+        if(ID>=100) return new Texture(Gdx.files.internal(ID + ".gif"));
+
+        return  new Texture(Gdx.files.internal("empty.png"));
+    }
+
 }

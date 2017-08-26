@@ -46,6 +46,7 @@ public class Main extends Game {
 		batch = new SpriteBatch();
 
 		GfxHandler.initGfx();
+		CardDataSet.initData();
 
 		Slot.slotCount = 4;
 		Slot.slotHeight = Main.VIEWPORT_HEIGHT/Slot.slotCount;
@@ -59,9 +60,7 @@ public class Main extends Game {
 
 	@Override
 	public void render () {
-
 		super.render();
-
 	}
 	
 	@Override

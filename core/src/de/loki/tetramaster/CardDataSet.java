@@ -33,10 +33,10 @@ public class CardDataSet {
     private static CardDataSet getCardDataSetWithString(String data){
         char[] split = data.toCharArray();
 
-        int av = Integer.parseInt("" + split[0]);
+        int av = Integer.parseInt("" + split[0], 16);
         String at = "" + split[1];
-        int mdv = Integer.parseInt("" + split[2]);
-        int pdv = Integer.parseInt("" + split[3]);
+        int mdv = Integer.parseInt("" + split[2], 16);
+        int pdv = Integer.parseInt("" + split[3], 16);
 
         return new CardDataSet(av, at, mdv, pdv);
     }

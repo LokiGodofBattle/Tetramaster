@@ -16,12 +16,14 @@ public class CardSelectScreen implements Screen {
 
     private Main mainClass;
     private Array<Slot> collection;
+    private int collectionSizeX;
 
     public CardSelectScreen(Main mainClass){
         this.mainClass = mainClass;
         collection = new Array<Slot>();
 
         initSlots();
+        setCardsInSlots();
     }
 
     @Override
@@ -43,6 +45,15 @@ public class CardSelectScreen implements Screen {
         mainClass.batch.begin();
         drawCollectionSlots(mainClass.batch);
         mainClass.batch.end();
+    }
+
+    private void setCardsInSlots(){
+        for(int i = 0; i<SaveData.collection.size; i++){
+            int x = i % collectionSizeX;
+            int y = Slot.slotCount-1 - i/collectionSizeX;
+            collection.get(SaveData.getPositionInArrayFromCoordinate(x, y)).setCard(SaveData.collection.get(i));
+            collection.get(SaveData.getPositionInArrayFromCoordinate(x, y)).setSlotState(SlotState.FRIENDLY);
+        }
     }
 
     @Override
@@ -71,14 +82,13 @@ public class CardSelectScreen implements Screen {
     }
 
     private void initSlots(){
-        int collectionSizeX = (int)(Main.VIEWPORT_WIDTH/Slot.slotWidth);
+        collectionSizeX = (int)(Main.VIEWPORT_WIDTH/Slot.slotWidth);
 
         float bufferX = (Main.VIEWPORT_WIDTH-collectionSizeX*Slot.slotWidth)/2;
 
         for(int i = 0; i<collectionSizeX; i++){
             for(int j = 0; j<Slot.slotCount; j++){
                 Slot slot = new CollectionSlot(new Vector2(i*Slot.slotWidth+bufferX, j*Slot.slotHeight), new Vector2(i, j));
-                slot.setSlotState(SlotState.FRIENDLY);
                 collection.add(slot);
             }
         }

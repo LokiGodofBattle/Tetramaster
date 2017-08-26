@@ -47,13 +47,10 @@ public class Slot {
 
     public void draw(SpriteBatch batch){
         if(state != SlotState.EMPTY)img.draw(batch, 1);
+        if(card != null) card.draw(batch, pos);
     }
 
     public void render(Vector2 mousePos){
-    }
-
-    public static int getPositionInArrayFromCoordinate(float x, float y){
-        return (int) (x*4+y);
     }
 
 

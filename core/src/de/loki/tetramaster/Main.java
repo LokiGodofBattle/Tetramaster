@@ -44,7 +44,6 @@ public class Main extends Game {
 		scale = VIEWPORT_WIDTH/Gdx.graphics.getWidth();
 
 		batch = new SpriteBatch();
-
 		GfxHandler.initGfx();
 		CardDataSet.initData();
 
@@ -53,9 +52,12 @@ public class Main extends Game {
 		Slot.slotScale = Slot.slotHeight/GfxHandler.getBackgroundBySlotState(SlotState.BLOCKED).getHeight();
 		Slot.slotWidth = GfxHandler.getBackgroundBySlotState(SlotState.BLOCKED).getWidth()*Slot.slotScale;
 
+		GfxHandler.initArrowGfx();
+		SaveData.initData();
+
 		gameScreen = new GameScreen(this);
 		cardSelectScreen = new CardSelectScreen(this);
-		this.setScreen(gameScreen);
+		this.setScreen(cardSelectScreen);
 	}
 
 	@Override

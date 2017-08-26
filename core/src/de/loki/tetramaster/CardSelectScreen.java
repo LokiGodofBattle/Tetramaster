@@ -77,7 +77,7 @@ public class CardSelectScreen implements Screen {
 
         for(int i = 0; i<collectionSizeX; i++){
             for(int j = 0; j<Slot.slotCount; j++){
-                Slot slot = new Slot(new Vector2(i*Slot.slotWidth+bufferX, j*Slot.slotHeight), new Vector2(i, j));
+                Slot slot = new CollectionSlot(new Vector2(i*Slot.slotWidth+bufferX, j*Slot.slotHeight), new Vector2(i, j));
                 slot.setSlotState(SlotState.FRIENDLY);
                 collection.add(slot);
             }

@@ -54,7 +54,7 @@ public class Main extends Game {
 
 		gameScreen = new GameScreen(this);
 		cardSelectScreen = new CardSelectScreen(this);
-		this.setScreen(cardSelectScreen);
+		this.setScreen(gameScreen);
 	}
 
 	@Override

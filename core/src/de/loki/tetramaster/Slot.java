@@ -16,30 +16,15 @@ public class Slot {
     public static float slotHeight;
     public static int slotCount;
     public static float slotScale;
-    public Vector2 arrayPos;
     public Vector2 pos;
     public SlotState state;
-    private Rectangle hitbox;
+    protected Rectangle hitbox;
     private Image img;
 
     private Card card;
 
 
-
-    public Slot(Vector2 pos, Vector2 arrayPos){
-        this.arrayPos = arrayPos;
-        this.pos = pos;
-        this.state = SlotState.EMPTY;
-        this.hitbox = new Rectangle(pos.x, pos.y, slotWidth, slotHeight);
-
-        img = new Image(GfxHandler.getBackgroundBySlotState(state));
-        img.setScale(slotScale);
-        img.setPosition(pos.x, pos.y);
-
-    }
-
     public Slot(Vector2 pos){
-        this.arrayPos = new Vector2(-1, -1);
         this.pos = pos;
         this.state = SlotState.BLOCKED;
         this.hitbox = new Rectangle(pos.x, pos.y, slotWidth, slotHeight);
@@ -66,10 +51,6 @@ public class Slot {
     }
 
     public void render(Vector2 mousePos){
-        if(hitbox.contains(new Vector2(mousePos.x, mousePos.y)) && Gdx.input.justTouched()){
-            Gdx.app.log("debug", "APos x: " + arrayPos.x + " y: " + arrayPos.y);
-            setSlotState(SlotState.getNextSlotState(state));
-        }
     }
 
     public static int getPositionInArrayFromCoordinate(float x, float y){

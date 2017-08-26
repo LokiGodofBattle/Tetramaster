@@ -97,7 +97,7 @@ public class GameScreen implements Screen {
         //Playfield
         for(int i = 0; i<Slot.slotCount; i++){
             for(int j = 0; j<Slot.slotCount; j++){
-                field.add(new Slot(new Vector2(i, j), new Vector2(xOffset+i*Slot.slotWidth, j*Slot.slotHeight)));
+                field.add(new FieldSlot(new Vector2(xOffset+i*Slot.slotWidth, j*Slot.slotHeight), new Vector2(i, j)));
             }
         }
 
@@ -107,16 +107,16 @@ public class GameScreen implements Screen {
 
         //PlayerHand
         for (int i = 0; i<handSize; i++){
-            if(i%2 == 0) playerHand.add(new Slot(new Vector2(xOffsetHand, (i/2+1)*yOffset+i/2*Slot.slotHeight)));
-            else playerHand.add(new Slot(new Vector2(xOffsetHand*2+Slot.slotWidth, (i/2+1)*yOffsetSecondRow+i/2*Slot.slotHeight)));
+            if(i%2 == 0) playerHand.add(new HandSlot(new Vector2(xOffsetHand, (i/2+1)*yOffset+i/2*Slot.slotHeight)));
+            else playerHand.add(new HandSlot(new Vector2(xOffsetHand*2+Slot.slotWidth, (i/2+1)*yOffsetSecondRow+i/2*Slot.slotHeight)));
         }
 
         float xOffsetEnemyHand = xOffset + Slot.slotWidth*4;
 
         //EnemyHand
         for(int i = 0; i<handSize; i++){
-            if(i%2 == 0) playerHand.add(new Slot(new Vector2(xOffsetHand+xOffsetEnemyHand, (i/2+1)*yOffset+i/2*Slot.slotHeight)));
-            else playerHand.add(new Slot(new Vector2(xOffsetEnemyHand+xOffsetHand*2+Slot.slotWidth, (i/2+1)*yOffsetSecondRow+i/2*Slot.slotHeight)));
+            if(i%2 == 0) playerHand.add(new HandSlot(new Vector2(xOffsetHand+xOffsetEnemyHand, (i/2+1)*yOffset+i/2*Slot.slotHeight)));
+            else playerHand.add(new HandSlot(new Vector2(xOffsetEnemyHand+xOffsetHand*2+Slot.slotWidth, (i/2+1)*yOffsetSecondRow+i/2*Slot.slotHeight)));
         }
 
         randomizeBlockedSlots();

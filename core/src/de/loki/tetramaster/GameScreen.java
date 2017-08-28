@@ -33,6 +33,7 @@ public class GameScreen implements Screen {
         background.setPosition(Main.VIEWPORT_WIDTH/2-(background.getWidth()*background.getScaleX())/2, 0);
 
         initSlots();
+        HandSlot.initHand();
     }
 
     @Override
@@ -49,12 +50,15 @@ public class GameScreen implements Screen {
 
         renderAllSlots(new Vector2(mouse.x, mouse.y));
 
+        GameCounter.render();
+
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         mainClass.batch.setProjectionMatrix(Main.camera.combined);
         mainClass.batch.begin();
         background.draw(mainClass.batch, 1);
         drawAllSlots(mainClass.batch);
+        GameCounter.draw(mainClass.batch);
         mainClass.batch.end();
 
     }
@@ -111,12 +115,11 @@ public class GameScreen implements Screen {
             else playerHand.add(new HandSlot(new Vector2(xOffsetHand*2+Slot.slotWidth, (i/2+1)*yOffsetSecondRow+i/2*Slot.slotHeight)));
         }
 
-        float xOffsetEnemyHand = xOffset + Slot.slotWidth*4;
+        float xOffsetEnemyHand = (xOffset-Slot.slotWidth)/2 + xOffset + Slot.slotWidth * Slot.slotCount;
 
         //EnemyHand
         for(int i = 0; i<handSize; i++){
-            if(i%2 == 0) playerHand.add(new HandSlot(new Vector2(xOffsetHand+xOffsetEnemyHand, (i/2+1)*yOffset+i/2*Slot.slotHeight)));
-            else playerHand.add(new HandSlot(new Vector2(xOffsetEnemyHand+xOffsetHand*2+Slot.slotWidth, (i/2+1)*yOffsetSecondRow+i/2*Slot.slotHeight)));
+            enemyHand.add(new HandSlot(new Vector2(xOffsetEnemyHand, Main.VIEWPORT_HEIGHT-Slot.slotHeight-Slot.slotHeight/4*i)));
         }
 
         randomizeBlockedSlots();
@@ -149,10 +152,6 @@ public class GameScreen implements Screen {
 
         for(int i = 0; i<playerHand.size; i++){
             playerHand.get(i).render(mousePos);
-        }
-
-        for(int i = 0; i<enemyHand.size; i++){
-            enemyHand.get(i).render(mousePos);
         }
 
     }

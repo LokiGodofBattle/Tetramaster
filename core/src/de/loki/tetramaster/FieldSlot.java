@@ -20,9 +20,13 @@ public class FieldSlot extends Slot {
 
     public void render(Vector2 mousePos){
         if(hitbox.contains(new Vector2(mousePos.x, mousePos.y)) && Gdx.input.justTouched()){
-            Gdx.app.log("debug", "APos x: " + arrayPos.x + " y: " + arrayPos.y);
-            setSlotState(SlotState.getNextSlotState(state));
+            if(SaveData.savedCard != null && state == SlotState.EMPTY) {
+                setCard(SaveData.savedCard);
+                SaveData.savedCard = null;
+                setSlotState(SlotState.FRIENDLY);
+            }
         }
+
     }
 
 }

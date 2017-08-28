@@ -15,8 +15,24 @@ public class HandSlot extends Slot {
 
     public void render(Vector2 mousePos){
         if(hitbox.contains(new Vector2(mousePos.x, mousePos.y)) && Gdx.input.justTouched()){
-            setSlotState(SlotState.getNextSlotState(state));
+            if(SaveData.savedCard == null && card != null){
+                SaveData.savedCard = card;
+                card = null;
+                setSlotState(SlotState.EMPTY);
+            }
         }
+    }
+
+    public static void initHand(){
+        for(int i = 0; i<GameScreen.playerHand.size; i++){
+            SaveData.hand.add(SaveData.collection.get(i));
+        }
+
+        for(int i = 0; i<GameScreen.playerHand.size; i++){
+            GameScreen.playerHand.get(i).setCard(SaveData.hand.get(i));
+            GameScreen.playerHand.get(i).setSlotState(SlotState.FRIENDLY);
+        }
+
     }
 
 }

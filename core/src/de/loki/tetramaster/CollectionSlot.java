@@ -18,8 +18,13 @@ public class CollectionSlot extends Slot {
 
     public void render(Vector2 mousePos){
         if(hitbox.contains(new Vector2(mousePos.x, mousePos.y)) && Gdx.input.justTouched()){
-            Gdx.app.log("debug", "APos x: " + arrayPos.x + " y: " + arrayPos.y);
-            setSlotState(SlotState.getNextSlotState(state));
+            if(card != null && state == SlotState.FRIENDLY){
+                SaveData.selected.add(card);
+                setSlotState(SlotState.OPPOSING);
+            } else if(card != null && state == SlotState.OPPOSING){
+                SaveData.selected.removeValue(card, true);
+                setSlotState(SlotState.FRIENDLY);
+            }
         }
     }
 

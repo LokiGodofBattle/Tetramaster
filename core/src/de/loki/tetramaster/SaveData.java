@@ -10,9 +10,14 @@ import com.badlogic.gdx.utils.Array;
 public class SaveData {
 
     public static Array<Card> collection;
+    public static Array<Card> selected;
+    public static Card savedCard;
+    public static Array<Card> hand;
 
     public static void initData(){
         collection = new Array<Card>();
+        hand = new Array<Card>();
+        selected = new Array<Card>();
 
         for(int i = 0; i<5; i++){
             int id = MathUtils.random(0, 99);

@@ -19,7 +19,7 @@ public class GameScreen implements Screen {
 
     private Main mainClass;
     public Image background;
-    public static Array<Slot> field;
+    public static Array<FieldSlot> field;
     public static Array<Slot> playerHand;
     public static Array<Slot> enemyHand;
     public static int handSize;
@@ -56,7 +56,14 @@ public class GameScreen implements Screen {
 
         Main.camera.unproject(mouse);
 
-        if(turn){
+        if(FieldSlot.ongoingBattle && delayTimer<enemyTurnDelay){
+            delayTimer += Gdx.graphics.getDeltaTime();
+        }
+        else if(FieldSlot.ongoingBattle){
+            FieldSlot.battlePhaseTwo();
+        }
+        else if(turn){
+            delayTimer = 0;
             renderAllSlots(new Vector2(mouse.x, mouse.y));
         }
         else if(delayTimer<enemyTurnDelay){
@@ -119,14 +126,13 @@ public class GameScreen implements Screen {
             }
         }
 
-        FieldSlot.battlePhaseOne((FieldSlot) field.get(id),(FieldSlot) field.get(0));
     }
 
     public static void initSlots(){
 
         handSize = 5;
 
-        field = new Array<Slot>();
+        field = new Array<FieldSlot>();
         playerHand = new Array<Slot>();
         enemyHand = new Array<Slot>();
 

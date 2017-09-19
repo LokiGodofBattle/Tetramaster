@@ -35,4 +35,10 @@ public class HandSlot extends Slot {
 
     }
 
+    public static void initEnemyHand(){
+        for(int i = 0; i<GameScreen.handSize; i++){
+            GameScreen.enemyHand.get(i).setCard(SaveData.enemyHand.get(i));
+        }
+    }
+
 }

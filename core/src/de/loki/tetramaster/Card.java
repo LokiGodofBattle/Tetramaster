@@ -31,14 +31,16 @@ public class Card {
         }
     }
 
-    public void draw(SpriteBatch batch, Vector2 pos){
+    public void draw(SpriteBatch batch, Vector2 pos, boolean battling){
         img.setPosition(pos.x, pos.y);
         img.draw(batch, 1);
         drawArrows(batch, pos);
-        String txt = "" + Integer.toHexString(dataSet.attackValue).toUpperCase() + dataSet.attackType +
-                Integer.toHexString(dataSet.physicDefenceValue).toUpperCase() + Integer.toHexString(dataSet.magicDefenceValue).toUpperCase();
-        Main.glyphLayout.setText(Main.font, txt);
-        Main.font.draw(batch, txt, pos.x + (Slot.slotWidth-Main.glyphLayout.width)/2, pos.y + 80);
+        if(!battling){
+            String txt = "" + Integer.toHexString(dataSet.attackValue).toUpperCase() + dataSet.attackType +
+                    Integer.toHexString(dataSet.physicDefenceValue).toUpperCase() + Integer.toHexString(dataSet.magicDefenceValue).toUpperCase();
+            Main.glyphLayout.setText(Main.font, txt);
+            Main.font.draw(batch, txt, pos.x + (Slot.slotWidth-Main.glyphLayout.width)/2, pos.y + 80);
+        }
     }
 
     private void drawArrows(SpriteBatch batch, Vector2 pos){

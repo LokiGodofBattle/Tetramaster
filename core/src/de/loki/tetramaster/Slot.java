@@ -18,7 +18,7 @@ public class Slot {
     public Vector2 pos;
     public SlotState state;
     protected Rectangle hitbox;
-    private Image img;
+    protected Image img;
 
     protected Card card;
 
@@ -47,7 +47,7 @@ public class Slot {
 
     public void draw(SpriteBatch batch){
         if(state != SlotState.EMPTY)img.draw(batch, 1);
-        if(card != null && state != SlotState.EMPTY && state != SlotState.BLOCKED) card.draw(batch, pos);
+        if(card != null && state != SlotState.EMPTY && state != SlotState.BLOCKED) card.draw(batch, pos, false);
     }
 
     public void render(Vector2 mousePos){

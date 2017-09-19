@@ -23,6 +23,9 @@ public class GameScreen implements Screen {
     public static Array<Slot> playerHand;
     public static Array<Slot> enemyHand;
     public static int handSize;
+    public static boolean turn; //true = friendly, false = enemy
+    public static float enemyTurnDelay;
+    public static float delayTimer;
 
     public GameScreen(Main mainClass){
         this.mainClass = mainClass;
@@ -32,8 +35,13 @@ public class GameScreen implements Screen {
         background.setScaleX(Slot.slotWidth*4/background.getWidth());
         background.setPosition(Main.VIEWPORT_WIDTH/2-(background.getWidth()*background.getScaleX())/2, 0);
 
+        turn = true;
+        enemyTurnDelay = 1f;
+        delayTimer = 0f;
+
         initSlots();
         HandSlot.initHand();
+        HandSlot.initEnemyHand();
     }
 
     @Override
@@ -48,7 +56,18 @@ public class GameScreen implements Screen {
 
         Main.camera.unproject(mouse);
 
-        renderAllSlots(new Vector2(mouse.x, mouse.y));
+        if(turn){
+            renderAllSlots(new Vector2(mouse.x, mouse.y));
+        }
+        else if(delayTimer<enemyTurnDelay){
+            delayTimer += Gdx.graphics.getDeltaTime();
+        } else {
+            delayTimer = 0;
+
+            enemyTurn();
+
+            turn = true;
+        }
 
         GameCounter.render();
 
@@ -86,6 +105,21 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    public static void enemyTurn(){
+
+        int id;
+        while (true){
+            id = MathUtils.random(0, field.size-1);
+            if(field.get(id).card == null){
+                field.get(id).setCard(SaveData.enemyHand.get(MathUtils.random(0, SaveData.enemyHand.size-1)));
+                field.get(id).setSlotState(SlotState.OPPOSING);
+                break;
+            }
+        }
+
+        FieldSlot.battlePhaseOne((FieldSlot) field.get(id),(FieldSlot) field.get(0));
     }
 
     public static void initSlots(){

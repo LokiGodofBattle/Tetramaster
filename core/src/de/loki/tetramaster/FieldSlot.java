@@ -47,6 +47,7 @@ public class FieldSlot extends Slot {
     private void battle(){
 
         int battles = 0;
+        boolean won = false;
 
         boolean[] results = checkForBattles(arrayPos.x, arrayPos.y);
 
@@ -58,12 +59,12 @@ public class FieldSlot extends Slot {
             for(int i = 0; i<results.length; i++){
                 Vector2 neighbour = getArrayPosFromDirection(i);
                 if(results[i]){
-                    battlePhaseOne(this, (FieldSlot) GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(arrayPos.x + neighbour.x, arrayPos.y + neighbour.y)));
+                    won = battlePhaseOne(this, GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(arrayPos.x + neighbour.x, arrayPos.y + neighbour.y)));
                 }
             }
         }
 
-        if(battles == 0)flag();
+        if(won || battles == 0)flag();
 
     }
 
@@ -73,12 +74,15 @@ public class FieldSlot extends Slot {
         for(int i = 0; i<results.length; i++){
             Vector2 neighbour = getArrayPosFromDirection(i);
 
-            if(results[i]) GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(arrayPos.x + neighbour.x, arrayPos.y + neighbour.y)).setSlotState(SlotState.FRIENDLY);
+            if(results[i]){
+                FieldSlot field = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(arrayPos.x + neighbour.x, arrayPos.y + neighbour.y));
+                if(!field.lostBattle) field.setSlotState(SlotState.FRIENDLY);
+            }
 
         }
     }
 
-    public static void battlePhaseOne(FieldSlot attack, FieldSlot defence){
+    public static boolean battlePhaseOne(FieldSlot attack, FieldSlot defence){
 
         int attackValue = 0;
         int defenceValue = 0;
@@ -128,6 +132,8 @@ public class FieldSlot extends Slot {
         else attack.lostBattle = true;
 
         ongoingBattle = true;
+
+        return attackValue>defenceValue;
     }
 
     public static void battlePhaseTwo(){
@@ -135,8 +141,14 @@ public class FieldSlot extends Slot {
             FieldSlot field = GameScreen.field.get(i);
 
             field.battling = false;
-            if(field.lostBattle && field.state == SlotState.FRIENDLY) field.setSlotState(SlotState.OPPOSING);
-            else if(field.lostBattle && field.state == SlotState.OPPOSING) field.setSlotState(SlotState.FRIENDLY);
+            if(field.lostBattle && field.state == SlotState.FRIENDLY){
+                field.setSlotState(SlotState.OPPOSING);
+                field.lostBattle = false;
+            }
+            else if(field.lostBattle && field.state == SlotState.OPPOSING){
+                field.setSlotState(SlotState.FRIENDLY);
+                field.lostBattle = false;
+            }
         }
 
         ongoingBattle = false;
@@ -168,8 +180,8 @@ public class FieldSlot extends Slot {
             field = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x + 1, y + 0));
             if(field.card != null && field.state != homefield.state)results[2] = field.card.arrows[6] && arrows[2];
         }
-        if(x-1>-1 && y+1<4) {
-            field = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x - 1, y + 1));
+        if(x+1<4 && y-1>-1) {
+            field = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x + 1, y - 1));
             if (field.card != null && field.state != homefield.state) results[3] = field.card.arrows[7] && arrows[3];
         }
         if(y-1>-1) {
@@ -218,8 +230,8 @@ public class FieldSlot extends Slot {
             field = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x + 1, y + 0));
             if(field.card != null && field.state != homefield.state)results[2] = arrows[2];
         }
-        if(x-1>-1 && y+1<4) {
-            field = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x - 1, y + 1));
+        if(x+1<4 && y-1>-1) {
+            field = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x + 1, y - 1));
             if (field.card != null && field.state != homefield.state) results[3] = arrows[3];
         }
         if(y-1>-1) {

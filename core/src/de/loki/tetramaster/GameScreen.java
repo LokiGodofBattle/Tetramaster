@@ -36,7 +36,7 @@ public class GameScreen implements Screen {
         background.setPosition(Main.VIEWPORT_WIDTH/2-(background.getWidth()*background.getScaleX())/2, 0);
 
         turn = true;
-        enemyTurnDelay = 1f;
+        enemyTurnDelay = 3f;
         delayTimer = 0f;
 
         initSlots();

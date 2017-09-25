@@ -17,6 +17,8 @@ public class FieldSlot extends Slot {
     public boolean battling;
     public boolean lostBattle;
     public int score;
+    public boolean pickable;
+    private static Vector2 pickingSlotPos;
 
     public FieldSlot(Vector2 pos, Vector2 arrayPos){
         super(pos);
@@ -24,13 +26,23 @@ public class FieldSlot extends Slot {
         setSlotState(SlotState.EMPTY);
         this.score = 0;
         this.lostBattle = false;
+        this.pickable = false;
     }
 
     public void render(Vector2 mousePos){
         if(hitbox.contains(new Vector2(mousePos.x, mousePos.y)) && Gdx.input.justTouched()){
-            if(SaveData.savedCard != null && state == SlotState.EMPTY) {
+            if(SaveData.savedCard != null && state == SlotState.EMPTY && !pickable) {
                 playCard();
                 battle();
+            } else if(pickable){
+                if(battlePhaseOne(GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(pickingSlotPos.x, pickingSlotPos.y)), this)){
+                    GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(pickingSlotPos.x, pickingSlotPos.y)).flag();
+                }
+
+                for(int i = 0; i<GameScreen.field.size; i++){
+                    GameScreen.field.get(i).pickable = false;
+                    GameScreen.rdyToPick = false;
+                }
             }
         }
 
@@ -44,12 +56,12 @@ public class FieldSlot extends Slot {
         GameScreen.turn = false;
     }
 
-    private void battle(){
+    public void battle(){
 
         int battles = 0;
         boolean won = false;
 
-        boolean[] results = checkForBattles(arrayPos.x, arrayPos.y);
+        boolean[] results = checkForBattles(arrayPos.x, arrayPos.y, null);
 
         for(int i = 0; i<results.length; i++){
             if(results[i]) battles++;
@@ -64,19 +76,31 @@ public class FieldSlot extends Slot {
             }
         }
 
+        if(battles >1){
+            for(int i = 0; i<results.length; i++){
+                if(results[i])GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(arrayPos.x + getArrayPosFromDirection(i).x, arrayPos.y + getArrayPosFromDirection(i).y)).pickable = true;
+            }
+
+            GameScreen.rdyToPick = true;
+            pickingSlotPos = new Vector2(arrayPos.x, arrayPos.y);
+        }
+
         if(won || battles == 0)flag();
 
     }
 
     private void flag(){
-        boolean[] results = checkForFlag(arrayPos.x, arrayPos.y);
+        boolean[] results = checkForFlag(arrayPos.x, arrayPos.y, null);
 
         for(int i = 0; i<results.length; i++){
             Vector2 neighbour = getArrayPosFromDirection(i);
 
             if(results[i]){
                 FieldSlot field = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(arrayPos.x + neighbour.x, arrayPos.y + neighbour.y));
-                if(!field.lostBattle) field.setSlotState(SlotState.FRIENDLY);
+                if(!field.lostBattle){
+                    if(field.state == SlotState.OPPOSING)field.setSlotState(SlotState.FRIENDLY);
+                    else if(field.state == SlotState.FRIENDLY) field.setSlotState(SlotState.OPPOSING);
+                }
             }
 
         }
@@ -154,11 +178,13 @@ public class FieldSlot extends Slot {
         ongoingBattle = false;
     }
 
-    public static boolean[] checkForBattles(float x, float y){
+    public static boolean[] checkForBattles(float x, float y, Card card){
 
         FieldSlot homefield = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x, y));
 
-        boolean[] arrows = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x, y)).card.arrows;
+        boolean[] arrows;
+        if(homefield.card != null) arrows = homefield.card.arrows;
+        else arrows = card.arrows;
 
         boolean[] results = new boolean[8];
 
@@ -204,11 +230,13 @@ public class FieldSlot extends Slot {
         return results;
     }
 
-    public static boolean[] checkForFlag(float x, float y){
+    public static boolean[] checkForFlag(float x, float y, Card card){
 
         FieldSlot homefield = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x, y));
 
-        boolean[] arrows = GameScreen.field.get(SaveData.getPositionInArrayFromCoordinate(x, y)).card.arrows;
+        boolean[] arrows;
+        if(homefield.card != null) arrows = homefield.card.arrows;
+        else arrows = card.arrows;
 
         boolean[] results = new boolean[8];
 
@@ -263,7 +291,7 @@ public class FieldSlot extends Slot {
             case 2:
                 return new Vector2(1, 0);
             case 3:
-                return new Vector2(-1, 1);
+                return new Vector2(1, -1);
             case 4:
                 return new Vector2(0, -1);
             case 5:
@@ -284,6 +312,11 @@ public class FieldSlot extends Slot {
             String txt = "" + score;
             Main.glyphLayout.setText(Main.font, txt);
             Main.font.draw(batch, txt, pos.x + (Slot.slotWidth-Main.glyphLayout.width)/2, pos.y + 80);
+        }
+        if(pickable){
+            String txt = "choose";
+            Main.glyphLayout.setText(Main.font, txt);
+            Main.font.draw(batch, txt, pos.x + (Slot.slotWidth-Main.glyphLayout.width)/2, pos.y + 180);
         }
     }
 

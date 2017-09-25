@@ -26,6 +26,8 @@ public class GameScreen implements Screen {
     public static boolean turn; //true = friendly, false = enemy
     public static float enemyTurnDelay;
     public static float delayTimer;
+    public static boolean rdyToPick;
+    private static int selectedCard = 0;
 
     public GameScreen(Main mainClass){
         this.mainClass = mainClass;
@@ -36,8 +38,9 @@ public class GameScreen implements Screen {
         background.setPosition(Main.VIEWPORT_WIDTH/2-(background.getWidth()*background.getScaleX())/2, 0);
 
         turn = true;
-        enemyTurnDelay = 3f;
+        enemyTurnDelay = 1f;
         delayTimer = 0f;
+        rdyToPick = false;
 
         initSlots();
         HandSlot.initHand();
@@ -60,7 +63,12 @@ public class GameScreen implements Screen {
             delayTimer += Gdx.graphics.getDeltaTime();
         }
         else if(FieldSlot.ongoingBattle){
+            delayTimer = 0;
             FieldSlot.battlePhaseTwo();
+        } else if(rdyToPick){
+            for(int i = 0; i<field.size; i++){
+                field.get(i).render(new Vector2(mouse.x, mouse.y));
+            }
         }
         else if(turn){
             delayTimer = 0;
@@ -116,16 +124,66 @@ public class GameScreen implements Screen {
 
     public static void enemyTurn(){
 
-        int id;
-        while (true){
-            id = MathUtils.random(0, field.size-1);
-            if(field.get(id).card == null){
-                field.get(id).setCard(SaveData.enemyHand.get(MathUtils.random(0, SaveData.enemyHand.size-1)));
-                field.get(id).setSlotState(SlotState.OPPOSING);
-                break;
+//        int id;
+//        while (true){
+//            id = MathUtils.random(0, field.size-1);
+//            if(field.get(id).card == null){
+//                field.get(id).setCard(SaveData.enemyHand.get(MathUtils.random(0, SaveData.enemyHand.size-1)));
+//                field.get(id).setSlotState(SlotState.OPPOSING);
+//                break;
+//            }
+//        }
+
+        int[][] fieldMatrix = new int[4][4];
+
+        for(int i = 0; i<4; i++){
+            for(int j = 0; j<4; j++){
+                int score = 0;
+
+                boolean[] battleResults = FieldSlot.checkForBattles(i, j, SaveData.enemyHand.get(selectedCard));
+                boolean[] flagResults;
+
+                int battles = 0;
+                for(int k = 0; k<battleResults.length; k++){
+                    if(battleResults[k]) battles++;
+                }
+
+                score += battles;
+
+                flagResults = FieldSlot.checkForFlag(i, j, SaveData.enemyHand.get(selectedCard));
+
+                int flags = 0;
+                for(int k = 0; k<flagResults.length; k++){
+                    if(flagResults[k] && !battleResults[k]) flags++;
+                }
+
+                score += flags*2;
+
+                fieldMatrix[i][j] = score;
             }
         }
 
+        int highestValue = Integer.MIN_VALUE;
+        Vector2 pos = new Vector2(0, 0);
+
+        for(int i = 0; i<4; i++){
+            for(int j = 0; j<4; j++){
+                if(fieldMatrix[i][j]>highestValue && field.get(SaveData.getPositionInArrayFromCoordinate(i, j)).state == SlotState.EMPTY){
+                    highestValue = fieldMatrix[i][j];
+                    pos.x = i;
+                    pos.y = j;
+                }
+            }
+        }
+
+        Gdx.app.log("debug", "1");
+        field.get(SaveData.getPositionInArrayFromCoordinate(pos.x, pos.y)).setCard(SaveData.enemyHand.get(selectedCard));
+        field.get(SaveData.getPositionInArrayFromCoordinate(pos.x, pos.y)).setSlotState(SlotState.OPPOSING);
+        field.get(SaveData.getPositionInArrayFromCoordinate(pos.x, pos.y)).battle();
+
+        enemyHand.get(selectedCard).setSlotState(SlotState.EMPTY);
+
+        selectedCard++;
     }
 
     public static void initSlots(){
